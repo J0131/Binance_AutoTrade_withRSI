@@ -1,3 +1,6 @@
+# Binance_AutoTrade_withRSI
+RSI 지표를 기반으로 한 바이낸스 Auto Trade 프로그램
+
 # Binance Futures Public API Connector Python
 [![Python version](https://img.shields.io/pypi/pyversions/binance-futures-connector)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
