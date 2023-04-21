@@ -77,17 +77,18 @@ def my_balance():
 
 
 
-um_futures_client = UMFutures(key='Your Access key',
-                               secret='Your Secret key')
+um_futures_client = UMFutures(key='your access key',
+                               secret='your secret key')
 
 # um_futures_client.change_position_mode(dualSidePosition="true", timestamp = get_timestamp())
 
 # Get account information
 assets = um_futures_client.account()['assets']
 
-print(um_futures_client.get_position_risk(symbol="APTUSDT", timestamp=get_timestamp()))
+position = um_futures_client.get_position_risk(symbol="APTUSDT", timestamp=get_timestamp())
+print(position)
 
-# print(um_futures_client.get_all_orders(symbol="APTUSDT", timestamp=get_timestamp()))
+print(um_futures_client.get_all_orders(symbol="APTUSDT", timestamp=get_timestamp()))
 
 
 buy_list = []
@@ -154,9 +155,12 @@ while True:
         print(rsi_list[i])
         print(" ==========================================")
         if rsi_list[i][199] >= 80:
+
+            position = um_futures_client.get_position_risk(symbol="APTUSDT", timestamp=get_timestamp())
+
             # long position sell
-            um_futures_client.new_order(symbol=i, positionSide="LONG", side="SELL", type="MARKET", timestamp = get_timestamp() ,quantity = avail_asset[i])
-            buy_list.remove(i)
+            um_futures_client.new_order(symbol=i, positionSide="LONG", side="SELL", type="MARKET", timestamp = get_timestamp() ,quantity = float(position[0]['positionAmt']))
+            #buy_list.remove(i)
 
             assets = um_futures_client.account()['assets']
 
@@ -181,11 +185,13 @@ while True:
 
 
     for i in buy_list:
-        if rsi_list[i][199] <= 20:
+        if rsi_list[i][199] <= 20 and float(position[1]['positionAmt']) != 0 :
             
+            position = um_futures_client.get_position_risk(symbol="APTUSDT", timestamp=get_timestamp())
+
             # SHORT position sell
-            um_futures_client.new_order(symbol=i, positionSide="SHORT", side="SELL", type="MARKET", timestamp = get_timestamp() ,quantity = avail_asset[i])
-            buy_list.remove(i)
+            um_futures_client.new_order(symbol=i, positionSide="SHORT", side="SELL", type="MARKET", timestamp = get_timestamp() ,quantity = float(position[0]['positionAmt']))
+            #buy_list.remove(i)
 
             assets = um_futures_client.account()['assets']
 
@@ -195,8 +201,7 @@ while True:
                 if float(j['walletBalance']) != 0 and j['asset'] != 'USDT':
                     avail_asset[j['asset']] = j['walletBalance']
 
-
-            # short position buy
+            # long position buy
             um_futures_client.new_order(symbol=i, positionSide="LONG", side="BUY", type="MARKET", timestamp = get_timestamp() ,quantity = buy_quantity(buy_list,i))
             buy_list.append(i)
 
